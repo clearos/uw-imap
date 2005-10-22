@@ -1,4 +1,3 @@
-# $Id$
 
 # Change the default connected directory from the user's home directory
 # to the named subdirectory of the user's home directory
@@ -9,6 +8,7 @@ Name:	 uw-imap
 #Epoch:	 1
 Version: 2004g
 Release: 1%{?dist}
+
 License: University of Washington Free-Fork License
 Group: 	 System Environment/Daemons
 URL:	 http://www.washington.edu/imap/
