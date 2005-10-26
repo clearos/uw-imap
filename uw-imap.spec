@@ -17,13 +17,13 @@ Source:	 ftp://ftp.cac.washington.edu/imap/imap-2004g.tar.Z
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %define soname    c-client
-%define somajver  %{version} 
-%define shlibname lib%{soname}.so.%{somajver}
-%define imap_libs lib%{soname}%{somajver}
+%define somajor  %{version} 
+%define shlibname lib%{soname}.so.%{somajor}
+%define imap_libs lib%{soname}%{somajor}
 #Old naming
 #define imap_libs	imap-libs
 
-# FC4 uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
+# FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
 %define sslcerts  %{expand:%(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)}
 
 # imap -> uw-imap rename
@@ -102,6 +102,7 @@ This package contains some utilities for managing UW IMAP email.
 %patch9 -p1 -b .shared
 %patch10 -p1 -b .authmd5
 # use mbx (instead of unix/mbox) folder format by default
+# its faster, allows (better) locking
 %patch11 -p1 -b .mbxproto
 
 install -m644 %{SOURCE9} README.IMAPS 
