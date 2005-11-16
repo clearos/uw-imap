@@ -5,9 +5,8 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-#Epoch:	 1
 Version: 2004g
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 License: University of Washington Free-Fork License
 Group: 	 System Environment/Daemons
@@ -272,6 +271,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Nov 16 2005 Rex Dieter <rexdieter[AT]users.sf.net> 2004g-2 
+- rebuild for new openssl
+
 * Mon Sep 26 2005 Rex Dieter <rexdieter[AT]users.sf.net> 2004g-1
 - imap-2004g
 - /etc -> %%_sysconfdir
