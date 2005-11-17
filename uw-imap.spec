@@ -6,7 +6,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2004g
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 License: University of Washington Free-Fork License
 Group: 	 System Environment/Daemons
@@ -181,7 +181,7 @@ touch $RPM_BUILD_ROOT%{sslcerts}/{imapd,ipop3d}.pem
 # c-client.cf: mail_subdirectory
 cat > c-client.cf <<EOF
 I accept the risk of using UW-IMAP
-set mail-subdirectory %{mail_subdirectory} 
+set mail-subdirectory %{mail_subdirectory}
 EOF
 install -p -m644 -D c-client.cf $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
 
@@ -271,6 +271,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Nov 17 2005 Rex Dieter <rexdieter[AT]users.sf.net> 2004g-3
+- omit trailing whitespace in default c-client.cf
+
 * Wed Nov 16 2005 Rex Dieter <rexdieter[AT]users.sf.net> 2004g-2 
 - rebuild for new openssl
 
