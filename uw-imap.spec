@@ -6,7 +6,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2004g
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 License: University of Washington Free-Fork License
 Group: 	 System Environment/Daemons
@@ -28,13 +28,15 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # imap -> uw-imap rename
 Obsoletes: imap < 1:%{version}
 
-Source1: imap.pamd
+# legacy/old pam setup, using pam_stack.so
+Source1: imap.pam
+# new pam setup, using new "include" feature
+Source2: imap.fc5.pam
 Source3: imap-xinetd
 Source4: ipop2-xinetd
 Source5: ipop3-xinetd
 Source6: imaps-xinetd
 Source7: pop3s-xinetd
-Source9: README.IMAPS
 
 Patch1: imap-2004-paths.patch
 Patch2: imap-2004d-optflags.patch
@@ -44,7 +46,6 @@ Patch9: imap-2002e-shared.patch
 Patch10: imap-2002e-authmd5.patch
 Patch11: imap-2004c1-mbxproto.patch
 
-# for legacy machines
 BuildRequires: krb5-devel
 BuildRequires: openssl-devel
 BuildRequires: pam-devel
@@ -104,8 +105,11 @@ This package contains some utilities for managing UW IMAP email.
 # its faster, allows (better) locking
 %patch11 -p1 -b .mbxproto
 
-install -m644 %{SOURCE9} README.IMAPS 
-sed -i -e "s|@@SSLCERTS@@|%{sslcerts}|" README.IMAPS
+%if "%{?fedora}" > "4"
+install -p -m644 %{SOURCE2} imap.pam
+%else
+install -p -m644 %{SOURCE1} imap.pam
+%endif
 
 
 %build
@@ -138,36 +142,34 @@ SHLIBNAME=%{shlibname}
 %install
 rm -rf $RPM_BUILD_ROOT
 
-mkdir -p $RPM_BUILD_ROOT%{_libdir}
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/
 install -p -m644 ./c-client/c-client.a $RPM_BUILD_ROOT%{_libdir}/
-ln -s c-client.a  $RPM_BUILD_ROOT%{_libdir}/libc-client.a
+ln -s c-client.a $RPM_BUILD_ROOT%{_libdir}/libc-client.a
 
 install -p -m755 ./c-client/%{shlibname} $RPM_BUILD_ROOT%{_libdir}/
 ln -s %{shlibname} $RPM_BUILD_ROOT%{_libdir}/lib%{soname}.so
 
-mkdir -p $RPM_BUILD_ROOT%{_includedir}/imap
+mkdir -p $RPM_BUILD_ROOT%{_includedir}/imap/
 install -m644 ./c-client/*.h $RPM_BUILD_ROOT%{_includedir}/imap
 # Added linkage.c to fix (#34658) <mharris>
 install -m644 ./c-client/linkage.c $RPM_BUILD_ROOT%{_includedir}/imap
 install -m644 ./src/osdep/tops-20/shortsym.h $RPM_BUILD_ROOT%{_includedir}/imap
 
-mkdir -p $RPM_BUILD_ROOT%{_mandir}/man8
+mkdir -p $RPM_BUILD_ROOT%{_mandir}/man8/
 install -p -m644 src/{ipopd/ipopd,imapd/imapd}.8 $RPM_BUILD_ROOT%{_mandir}/man8/
 mkdir -p $RPM_BUILD_ROOT%{_sbindir}
 install -p -m755 ipopd/ipop{2d,3d} $RPM_BUILD_ROOT%{_sbindir}/
 install -p -m755 imapd/imapd $RPM_BUILD_ROOT%{_sbindir}/
 install -p -m755 mlock/mlock $RPM_BUILD_ROOT%{_sbindir}/
 
-mkdir -p $RPM_BUILD_ROOT%{_bindir}
+mkdir -p $RPM_BUILD_ROOT%{_bindir}/
 install -p -m755 dmail/dmail mailutil/mailutil mtest/mtest tmail/tmail $RPM_BUILD_ROOT%{_bindir}/
-mkdir -p $RPM_BUILD_ROOT%{_mandir}/man1
+mkdir -p $RPM_BUILD_ROOT%{_mandir}/man1/
 install -p -m644 src/{dmail/dmail,mailutil/mailutil,tmail/tmail}.1 $RPM_BUILD_ROOT%{_mandir}/man1/
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pam.d
-install -p -m644 -D ${RPM_SOURCE_DIR}/imap.pamd $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/imap
-install -p -m644 -D ${RPM_SOURCE_DIR}/imap.pamd $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pop
+install -p -m644 -D imap.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/imap
+install -p -m644 -D imap.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pop
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/
 install -p -m644 -D %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/imap
 install -p -m644 -D %{SOURCE6} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/imaps
 install -p -m644 -D %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop2
@@ -175,7 +177,7 @@ install -p -m644 -D %{SOURCE5} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop3
 install -p -m644 -D %{SOURCE7} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/pop3s
 
 # Generate ghost *.pem files
-mkdir -p $RPM_BUILD_ROOT%{sslcerts}
+mkdir -p $RPM_BUILD_ROOT%{sslcerts}/
 touch $RPM_BUILD_ROOT%{sslcerts}/{imapd,ipop3d}.pem
 
 # c-client.cf: mail_subdirectory
@@ -218,7 +220,7 @@ done
 
 %triggerpostun -- imap < 1:2004
 #if upgrading from old version, don't change/set (default) MailDir
-if [ -r %{_sysconfdir}/c-client.cf ]; then
+if [ -f %{_sysconfdir}/c-client.cf ]; then
   if grep -q "^set mail-subdirectory %{mail_subdirectory}" %{_sysconfdir}/c-client.cf; then
     sed -i -e 's/^set mail-subdirectory/\#set mail-subdirectory/g' \
       %{_sysconfdir}/c-client.cf
@@ -232,7 +234,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc README.IMAPS docs/CONFIG
+%doc docs/SSLBUILD
 %config %{_sysconfdir}/pam.d/imap
 %config %{_sysconfdir}/pam.d/pop
 %config(noreplace) %{_sysconfdir}/xinetd.d/imap
@@ -258,19 +260,21 @@ rm -rf $RPM_BUILD_ROOT
 %files -n lib%{soname}%{version}
 %defattr(-,root,root)
 %doc docs/RELNOTES docs/*.txt
-%doc docs/CONFIG 
 %{_libdir}/lib%{soname}.so.*
 
 %files devel
 %defattr(-,root,root)
-%doc docs/SSLBUILD
-%{_includedir}/imap
+%{_includedir}/imap/
 %{_libdir}/c-client.a
 %{_libdir}/libc-client.a
 %{_libdir}/lib%{soname}.so
 
 
 %changelog
+* Thu Nov 17 2005 Rex Dieter <rexdieter[AT]users.sf.net> 2004g-4
+- use pam's "include" feature on fc5
+- cleanup %%doc handling, remove useless bits
+
 * Thu Nov 17 2005 Rex Dieter <rexdieter[AT]users.sf.net> 2004g-3
 - omit trailing whitespace in default c-client.cf
 

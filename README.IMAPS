@@ -1,5 +1,0 @@
-The IMAP server is now configured by default to use its built-in SSL
-support instead of using stunnel.  Accordingly, the name of the
-certificate file in @@SSLCERTS@@ has changed from stunnel.pem
-to imapd.pem.  Users upgrading from previous releases will need to
-rename, copy, or create a symbolic link to their existing certificate.
