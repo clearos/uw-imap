@@ -6,7 +6,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2004g
-Release: 4%{?dist}
+Release: 4%{?dist}.1
 
 License: University of Washington Free-Fork License
 Group: 	 System Environment/Daemons
@@ -271,6 +271,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Feb 10 2006 Rex Dieter <rexdieter[AT]users.sf.net> 
+- fc5: gcc/glibc respin
+
 * Thu Nov 17 2005 Rex Dieter <rexdieter[AT]users.sf.net> 2004g-4
 - use pam's "include" feature on fc5
 - cleanup %%doc handling, remove useless bits
