@@ -6,7 +6,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2004g
-Release: 4%{?dist}.2
+Release: 5%{?dist}
 
 License: University of Washington Free-Fork License
 Group: 	 System Environment/Daemons
@@ -29,9 +29,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Obsoletes: imap < 1:%{version}
 
 # legacy/old pam setup, using pam_stack.so
-Source1: imap.pam
+Source1: imap-legacy.pam
 # new pam setup, using new "include" feature
-Source2: imap.fc5.pam
+Source2: imap.pam
 Source3: imap-xinetd
 Source4: ipop2-xinetd
 Source5: ipop3-xinetd
@@ -233,7 +233,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %files
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %doc docs/SSLBUILD
 %config %{_sysconfdir}/pam.d/imap
 %config %{_sysconfdir}/pam.d/pop
@@ -252,7 +252,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_sbindir}/imapd
 
 %files utils
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{_bindir}/*
 %attr(2755, root, mail) %{_sbindir}/mlock
 %{_mandir}/man1/*
@@ -263,7 +263,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/lib%{soname}.so.*
 
 %files devel
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{_includedir}/imap/
 %{_libdir}/c-client.a
 %{_libdir}/libc-client.a
@@ -271,6 +271,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Aug 18 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2004g-5
+- cleanup, respin for fc6
+
 * Wed Mar 1 2006 Rex Dieter <rexdieter[AT]users.sf.net> 
 - fc5: gcc/glibc respin
 
