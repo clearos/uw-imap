@@ -5,14 +5,14 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2004g
-Release: 6%{?dist}
+Version: 2006
+Release: 1%{?dist}
 
 License: University of Washington Free-Fork License
 Group: 	 System Environment/Daemons
 URL:	 http://www.washington.edu/imap/
 # Old (non-latest) releases live at  ftp://ftp.cac.washington.edu/imap/old/
-Source:	 ftp://ftp.cac.washington.edu/imap/imap-2004g.tar.Z
+Source:	 ftp://ftp.cac.washington.edu/imap/imap-%{version}.tar.Z
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %define soname    c-client
@@ -38,13 +38,12 @@ Source5: ipop3-xinetd
 Source6: imaps-xinetd
 Source7: pop3s-xinetd
 
-Patch1: imap-2004-paths.patch
-Patch2: imap-2004d-optflags.patch
+Patch1: imap-2006-paths.patch
 Patch5: imap-2001a-overflow.patch
 Patch7: imap-2002d-ssltype.patch
 Patch9: imap-2002e-shared.patch
 Patch10: imap-2002e-authmd5.patch
-Patch11: imap-2004c1-mbxproto.patch
+Patch11: imap-2006-mixproto.patch
 
 BuildRequires: krb5-devel
 BuildRequires: openssl-devel
@@ -66,6 +65,8 @@ remote machine without downloading it to their local machine.
 %package -n %{imap_libs} 
 Summary: UW C-client mail library 
 Group:	 System Environment/Libraries
+Obsoletes: libc-client2004d < 1:2004d-2
+Obsoletes: libc-client2004e < 2004e-2
 %description -n %{imap_libs} 
 Provides a common API for accessing mailboxes. 
 
@@ -93,7 +94,6 @@ This package contains some utilities for managing UW IMAP email.
 %setup -q -n imap-%{version}
 
 %patch1 -p1 -b .paths
-%patch2 -p1 -b .optflags
 
 %patch5 -p1 -b .overflow
 
@@ -101,11 +101,11 @@ This package contains some utilities for managing UW IMAP email.
 
 %patch9 -p1 -b .shared
 %patch10 -p1 -b .authmd5
-# use mbx (instead of unix/mbox) folder format by default
+# use mix (instead of unix/mbox) folder format by default
 # its faster, allows (better) locking
-%patch11 -p1 -b .mbxproto
+%patch11 -p1 -b .mixproto
 
-%if "%{?fedora}" > "4"
+%if "%{?fedora}" > "4" || "%{?rhel}" > "5"
 install -p -m644 %{SOURCE2} imap.pam
 %else
 install -p -m644 %{SOURCE1} imap.pam
@@ -113,10 +113,10 @@ install -p -m644 %{SOURCE1} imap.pam
 
 
 %build
-# Not sure why this is included, omitting for now -- Rex
+# Not sure why this was ever included, omitting for now -- Rex
 #EXTRACFLAGS="$EXTRACFLAGS -DDISABLE_POP_PROXY=1"
 
-# Kerberos setup (proabably legacy-only -- Rex)
+# Kerberos setup
 if [ -x %{_sysconfdir}/profile.d/krb5.sh ]; then
   . %{_sysconfdir}/profile.d/krb5.sh
 elif ! echo ${PATH} | grep -q %{_prefix}kerberos/bin ; then
@@ -124,7 +124,8 @@ elif ! echo ${PATH} | grep -q %{_prefix}kerberos/bin ; then
 fi
 GSSDIR=$(krb5-config --prefix)
 
-# SSL setup (probably legacy-only -- Rex)
+## SSL setup
+# (probably legacy-only) -- Rex
 export EXTRACFLAGS="$EXTRACFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
 
 make %{?_smp_mflags} lnp \
@@ -271,6 +272,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Sep 15 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006-1
+- imap-2006
+- change default (CREATEPROTO) driver to mix
+- Obsolete old libc-clients
+
 * Tue Aug 29 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2004g-6 
 - fc6 respin
 

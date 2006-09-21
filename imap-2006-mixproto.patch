@@ -5,7 +5,7 @@
  # formats can never be empty files.
  
 -CREATEPROTO=unixproto
-+CREATEPROTO=mbxproto
++CREATEPROTO=mixproto
  EMPTYPROTO=unixproto
  
  
