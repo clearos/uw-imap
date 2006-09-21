@@ -6,7 +6,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 License: University of Washington Free-Fork License
 Group: 	 System Environment/Daemons
@@ -272,7 +272,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Fri Sep 15 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006-1
+* Fri Sep 15 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006-2
 - imap-2006
 - change default (CREATEPROTO) driver to mix
 - Obsolete old libc-clients
