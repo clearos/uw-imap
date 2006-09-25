@@ -82,6 +82,15 @@ Conflicts: libc-client-devel
 Contains the header files and static libraries for developing programs 
 which will use the UW C-client common API.
 
+%package devel-static 
+Summary: UW IMAP static library
+Group:   Development/Libraries
+Requires: %{name}-devel = %{version}-%{release}
+Requires: krb5-devel openssl-devel pam-devel
+%description devel-static 
+Contains static libraries for developing programs
+which will use the UW C-client common API.
+
 %package utils
 Summary: UW IMAP Utilities to make managing your email simpler
 Group: 	 Applications/System 
@@ -268,12 +277,18 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/imap/
+%{_libdir}/lib%{soname}.so
+
+%files devel-static
+%defattr(-,root,root,-)
 %{_libdir}/c-client.a
 %{_libdir}/libc-client.a
-%{_libdir}/lib%{soname}.so
 
 
 %changelog
+* Mon Sep 25 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006-4
+- -devel-static: package static lib separately. 
+
 * Mon Sep 25 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006-3
 - License: Apache 2.0
 
