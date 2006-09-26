@@ -5,8 +5,8 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2006
-Release: 4%{?dist}
+Version: 2006a
+Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -17,7 +17,8 @@ Source:	 ftp://ftp.cac.washington.edu/imap/imap-%{version}.tar.Z
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %define soname    c-client
-%define somajor  %{version} 
+#define somajor   %{version} 
+%define somajor   2006
 %define shlibname lib%{soname}.so.%{somajor}
 %define imap_libs lib%{soname}%{somajor}
 #Old naming
@@ -79,15 +80,15 @@ Requires: %{imap_libs} = %{version}-%{release}
 Obsoletes: imap-devel < 1:%{version}
 Conflicts: libc-client-devel
 %description devel
-Contains the header files and static libraries for developing programs 
+Contains the header files and libraries for developing programs 
 which will use the UW C-client common API.
 
-%package devel-static 
+%package static 
 Summary: UW IMAP static library
 Group:   Development/Libraries
 Requires: %{name}-devel = %{version}-%{release}
 Requires: krb5-devel openssl-devel pam-devel
-%description devel-static 
+%description static 
 Contains static libraries for developing programs
 which will use the UW C-client common API.
 
@@ -198,7 +199,11 @@ set mail-subdirectory %{mail_subdirectory}
 EOF
 install -p -m644 -D c-client.cf $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
 
+# include/omit static lib?
+%{!?_with_static:rm -f $RPM_BUILD_ROOT%{_libdir}/*.a }
 
+
+# FIXME, do this on daemon startup -- Rex
 %post
 {
 cd %{sslcerts} &> /dev/null || :
@@ -268,7 +273,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(2755, root, mail) %{_sbindir}/mlock
 %{_mandir}/man1/*
 
-%files -n lib%{soname}%{version}
+%files -n %{imap_libs} 
 %defattr(-,root,root)
 %doc LICENSE.txt NOTICE SUPPORT 
 %doc docs/RELNOTES docs/*.txt
@@ -279,13 +284,19 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/imap/
 %{_libdir}/lib%{soname}.so
 
-%files devel-static
+%if "%{?_with_static:1}" == "1"
+%files static
 %defattr(-,root,root,-)
 %{_libdir}/c-client.a
 %{_libdir}/libc-client.a
+%endif
 
 
 %changelog
+* Tue Sep 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-1
+- imap-2006a
+- omit static lib (for now, at least)
+
 * Mon Sep 25 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006-4
 - -devel-static: package static lib separately. 
 
