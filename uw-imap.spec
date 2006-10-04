@@ -1,19 +1,15 @@
 
-# Change the default connected directory from the user's home directory
-# to the named subdirectory of the user's home directory
-%define mail_subdirectory      Mail
-
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006a
-Release: 1%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
 Group: 	 System Environment/Daemons
 URL:	 http://www.washington.edu/imap/
 # Old (non-latest) releases live at  ftp://ftp.cac.washington.edu/imap/old/
-Source:	 ftp://ftp.cac.washington.edu/imap/imap-%{version}.tar.Z
+Source0: ftp://ftp.cac.washington.edu/imap/imap-%{version}.tar.Z
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %define soname    c-client
@@ -25,27 +21,30 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #define imap_libs	imap-libs
 
 # FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
-%define sslcerts  %{expand:%(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)}
+%global sslcerts  %(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)
 
 # imap -> uw-imap rename
 Obsoletes: imap < 1:%{version}
 
+Source10: c-client.cf
+
 # legacy/old pam setup, using pam_stack.so
-Source1: imap-legacy.pam
+Source21: imap-legacy.pam
 # new pam setup, using new "include" feature
-Source2: imap.pam
-Source3: imap-xinetd
-Source4: ipop2-xinetd
-Source5: ipop3-xinetd
-Source6: imaps-xinetd
-Source7: pop3s-xinetd
+Source22: imap.pam
+
+Source31: imap-xinetd
+Source32: ipop2-xinetd
+Source33: ipop3-xinetd
+Source34: imaps-xinetd
+Source35: pop3s-xinetd
+
 
 Patch1: imap-2006-paths.patch
 Patch5: imap-2001a-overflow.patch
 Patch7: imap-2002d-ssltype.patch
 Patch9: imap-2002e-shared.patch
 Patch10: imap-2002e-authmd5.patch
-Patch11: imap-2006-mixproto.patch
 
 BuildRequires: krb5-devel
 BuildRequires: openssl-devel
@@ -54,7 +53,6 @@ BuildRequires: pam-devel
 # Prereq is shorter than separate Requires, Requires(post), Requires(postun)
 Prereq: xinetd
 Requires(post): openssl
-Requires(triggerpostun): sed >= 4.0
 
 %description
 The %{name} package provides UW server daemons for both the IMAP (Internet
@@ -112,14 +110,11 @@ This package contains some utilities for managing UW IMAP email.
 
 %patch9 -p1 -b .shared
 %patch10 -p1 -b .authmd5
-# use mix (instead of unix/mbox) folder format by default
-# its faster, allows (better) locking
-%patch11 -p1 -b .mixproto
 
-%if "%{?fedora}" > "4" || "%{?rhel}" > "5"
-install -p -m644 %{SOURCE2} imap.pam
+%if "%{?fedora}" > "4" || "%{?rhel}" > "4"
+install -p -m644 %{SOURCE21} imap.pam
 %else
-install -p -m644 %{SOURCE1} imap.pam
+install -p -m644 %{SOURCE22} imap.pam
 %endif
 
 
@@ -155,8 +150,11 @@ SHLIBNAME=%{shlibname}
 rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/
+
+%if "%{?_with_static:1}" == "1"
 install -p -m644 ./c-client/c-client.a $RPM_BUILD_ROOT%{_libdir}/
 ln -s c-client.a $RPM_BUILD_ROOT%{_libdir}/libc-client.a
+%endif
 
 install -p -m755 ./c-client/%{shlibname} $RPM_BUILD_ROOT%{_libdir}/
 ln -s %{shlibname} $RPM_BUILD_ROOT%{_libdir}/lib%{soname}.so
@@ -182,25 +180,17 @@ install -p -m644 src/{dmail/dmail,mailutil/mailutil,tmail/tmail}.1 $RPM_BUILD_RO
 install -p -m644 -D imap.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/imap
 install -p -m644 -D imap.pam $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/pop
 
-install -p -m644 -D %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/imap
-install -p -m644 -D %{SOURCE6} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/imaps
-install -p -m644 -D %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop2
-install -p -m644 -D %{SOURCE5} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop3
-install -p -m644 -D %{SOURCE7} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/pop3s
+install -p -m644 -D %{SOURCE31} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/imap
+install -p -m644 -D %{SOURCE32} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/imaps
+install -p -m644 -D %{SOURCE33} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop2
+install -p -m644 -D %{SOURCE34} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop3
+install -p -m644 -D %{SOURCE35} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/pop3s
 
-# Generate ghost *.pem files
+# %ghost *.pem files
 mkdir -p $RPM_BUILD_ROOT%{sslcerts}/
 touch $RPM_BUILD_ROOT%{sslcerts}/{imapd,ipop3d}.pem
 
-# c-client.cf: mail_subdirectory
-cat > c-client.cf <<EOF
-I accept the risk of using UW-IMAP
-set mail-subdirectory %{mail_subdirectory}
-EOF
-install -p -m644 -D c-client.cf $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
-
-# include/omit static lib?
-%{!?_with_static:rm -f $RPM_BUILD_ROOT%{_libdir}/*.a }
+install -p -m644 -D %{SOURCE10} $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
 
 
 # FIXME, do this on daemon startup -- Rex
@@ -234,15 +224,6 @@ done
 
 %postun -n %{imap_libs} -p /sbin/ldconfig
 
-%triggerpostun -- imap < 1:2004
-#if upgrading from old version, don't change/set (default) MailDir
-if [ -f %{_sysconfdir}/c-client.cf ]; then
-  if grep -q "^set mail-subdirectory %{mail_subdirectory}" %{_sysconfdir}/c-client.cf; then
-    sed -i -e 's/^set mail-subdirectory/\#set mail-subdirectory/g' \
-      %{_sysconfdir}/c-client.cf
-  fi
-fi
-
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -256,12 +237,11 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/xinetd.d/imap
 %config(noreplace) %{_sysconfdir}/xinetd.d/ipop2
 %config(noreplace) %{_sysconfdir}/xinetd.d/ipop3
-# These need to be replaced (ie, can't use %%noreplace), or imaps/pop3s will fail after an upgrade
+# These need to be replaced (ie, can't use %%noreplace), or imaps/pop3s can fail on upgrade
 %config %{_sysconfdir}/xinetd.d/imaps
 %config %{_sysconfdir}/xinetd.d/pop3s
 %attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{sslcerts}/imapd.pem
 %attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{sslcerts}/ipop3d.pem
-%config(noreplace) %{_sysconfdir}/c-client.cf
 %{_mandir}/man8/*
 %{_sbindir}/ipop2d
 %{_sbindir}/ipop3d
@@ -277,6 +257,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc LICENSE.txt NOTICE SUPPORT 
 %doc docs/RELNOTES docs/*.txt
+%config(noreplace) %{_sysconfdir}/c-client.cf
 %{_libdir}/lib%{soname}.so.*
 
 %files devel
@@ -293,6 +274,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Oct 04 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-3
+- libc-client: move c-client.cf here
+- c-client.cf: +set new-folder-format same-as-inbox
+
+* Wed Oct 04 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-2
+- omit mixproto patch (lvn bug #1184)
+
 * Tue Sep 26 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-1
 - imap-2006a
 - omit static lib (for now, at least)
