@@ -2,7 +2,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006a
-Release: 3%{?dist}
+Release: 4%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -28,17 +28,16 @@ Obsoletes: imap < 1:%{version}
 
 Source10: c-client.cf
 
-# legacy/old pam setup, using pam_stack.so
-Source21: imap-legacy.pam
 # new pam setup, using new "include" feature
-Source22: imap.pam
+Source21: imap.pam
+# legacy/old pam setup, using pam_stack.so
+Source22: imap-legacy.pam
 
 Source31: imap-xinetd
-Source32: ipop2-xinetd
-Source33: ipop3-xinetd
-Source34: imaps-xinetd
+Source32: imaps-xinetd
+Source33: ipop2-xinetd
+Source34: ipop3-xinetd
 Source35: pop3s-xinetd
-
 
 Patch1: imap-2006-paths.patch
 Patch5: imap-2001a-overflow.patch
@@ -274,6 +273,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Oct 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-4
+- eek, pam.d/xinet.d bits were all mixed up, fixed.
+
 * Wed Oct 04 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-3
 - libc-client: move c-client.cf here
 - c-client.cf: +set new-folder-format same-as-inbox
