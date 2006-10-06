@@ -2,7 +2,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006a
-Release: 4%{?dist}
+Release: 6%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -231,14 +231,15 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc docs/SSLBUILD
-%config %{_sysconfdir}/pam.d/imap
-%config %{_sysconfdir}/pam.d/pop
+%config(noreplace) %{_sysconfdir}/pam.d/imap
+%config(noreplace) %{_sysconfdir}/pam.d/pop
 %config(noreplace) %{_sysconfdir}/xinetd.d/imap
 %config(noreplace) %{_sysconfdir}/xinetd.d/ipop2
 %config(noreplace) %{_sysconfdir}/xinetd.d/ipop3
 # These need to be replaced (ie, can't use %%noreplace), or imaps/pop3s can fail on upgrade
-%config %{_sysconfdir}/xinetd.d/imaps
-%config %{_sysconfdir}/xinetd.d/pop3s
+# do this in a %trigger or something not here... -- Rex
+%config(noreplace) %{_sysconfdir}/xinetd.d/imaps
+%config(noreplace) %{_sysconfdir}/xinetd.d/pop3s
 %attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{sslcerts}/imapd.pem
 %attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{sslcerts}/ipop3d.pem
 %{_mandir}/man8/*
@@ -273,6 +274,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Oct 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-6
+- omit EOL whitespace from c-client.cf
+
+* Thu Oct 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-5
+- %%config(noreplace) all xinetd.d/pam.d bits
+
 * Thu Oct 05 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-4
 - eek, pam.d/xinet.d bits were all mixed up, fixed.
 
