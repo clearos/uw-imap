@@ -1,8 +1,8 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2006a
-Release: 6%{?dist}
+Version: 2006b
+Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -257,7 +257,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc LICENSE.txt NOTICE SUPPORT 
 %doc docs/RELNOTES docs/*.txt
-%config(noreplace) %{_sysconfdir}/c-client.cf
+%ghost %config(missingok,noreplace) %{_sysconfdir}/c-client.cf
 %{_libdir}/lib%{soname}.so.*
 
 %files devel
@@ -274,6 +274,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Oct 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006b-1
+- imap-2006b
+- %%ghost %%config(missingok,noreplace) %%{_sysconfdir}/c-client.cf
+
 * Fri Oct 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006a-6
 - omit EOL whitespace from c-client.cf
 
