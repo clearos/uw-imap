@@ -1,7 +1,7 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2006b
+Version: 2006c1
 Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
@@ -274,6 +274,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Oct 25 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006c1-1
+- imap-2006c1
+
 * Fri Oct 06 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006b-1
 - imap-2006b
 - %%ghost %%config(missingok,noreplace) %%{_sysconfdir}/c-client.cf
