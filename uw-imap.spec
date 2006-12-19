@@ -1,7 +1,7 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2006c1
+Version: 2006d
 Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
@@ -41,7 +41,6 @@ Source35: pop3s-xinetd
 
 Patch1: imap-2006-paths.patch
 Patch5: imap-2001a-overflow.patch
-Patch7: imap-2002d-ssltype.patch
 Patch9: imap-2002e-shared.patch
 Patch10: imap-2002e-authmd5.patch
 
@@ -105,12 +104,10 @@ This package contains some utilities for managing UW IMAP email.
 
 %patch5 -p1 -b .overflow
 
-%patch7 -p1 -b .ssltype
-
 %patch9 -p1 -b .shared
 %patch10 -p1 -b .authmd5
 
-%if "%{?fedora}" > "4" || "%{?rhel}" > "4"
+%if 0%{?fedora} > 4 || 0%{?rhel} > 4
 install -p -m644 %{SOURCE21} imap.pam
 %else
 install -p -m644 %{SOURCE22} imap.pam
@@ -118,21 +115,16 @@ install -p -m644 %{SOURCE22} imap.pam
 
 
 %build
-# Not sure why this was ever included, omitting for now -- Rex
-#EXTRACFLAGS="$EXTRACFLAGS -DDISABLE_POP_PROXY=1"
 
 # Kerberos setup
-if [ -x %{_sysconfdir}/profile.d/krb5.sh ]; then
-  . %{_sysconfdir}/profile.d/krb5.sh
-elif ! echo ${PATH} | grep -q %{_prefix}kerberos/bin ; then
-  export PATH=%{_prefix}/kerberos/bin:${PATH}
-fi
+source %{_sysconfdir}/profile.d/krb5.sh
 GSSDIR=$(krb5-config --prefix)
 
 ## SSL setup
-# (probably legacy-only) -- Rex
+# probably legacy-only, but shouldn't hurt -- Rex
 export EXTRACFLAGS="$EXTRACFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
 
+echo "y" | \
 make %{?_smp_mflags} lnp \
 EXTRACFLAGS="$EXTRACFLAGS" \
 EXTRALDFLAGS="$EXTRALDFLAGS" \
@@ -274,6 +266,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 18 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 2006d-1
+- imap-2006d
+
 * Wed Oct 25 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006c1-1
 - imap-2006c1
 
