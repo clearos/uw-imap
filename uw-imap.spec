@@ -5,7 +5,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006e
-Release: 1%{snap}%{?dist}
+Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
