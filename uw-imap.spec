@@ -5,7 +5,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006e
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -121,7 +121,8 @@ install -p -m644 %{SOURCE22} imap.pam
 %build
 
 # Kerberos setup
-source %{_sysconfdir}/profile.d/krb5.sh
+test -f %{_sysconfdir}/profile.d/krb5-devel.sh && source %{_sysconfdir}/profile.d/krb5-devel.sh
+test -f %{_sysconfdir}/profile.d/krb5.sh && source %{_sysconfdir}/profile.d/krb5.sh
 GSSDIR=$(krb5-config --prefix)
 
 ## SSL setup
@@ -270,6 +271,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jan 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006e-2
+- use /etc/profile.d/krb5-devel.sh
+
 * Fri Jan 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006e-1
 - imap-2006e
 
