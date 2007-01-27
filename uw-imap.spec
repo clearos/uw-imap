@@ -1,15 +1,18 @@
 
+#define snap 0701181849
+#define beta .DEV.SNAP-%{snap}
+
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2006d
-Release: 1%{?dist}
+Version: 2006e
+Release: 1%{snap}%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
 Group: 	 System Environment/Daemons
 URL:	 http://www.washington.edu/imap/
 # Old (non-latest) releases live at  ftp://ftp.cac.washington.edu/imap/old/
-Source0: ftp://ftp.cac.washington.edu/imap/imap-%{version}.tar.Z
+Source0: ftp://ftp.cac.washington.edu/imap/imap-%{version}%{?beta}.tar.Z
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %define soname    c-client
@@ -74,6 +77,7 @@ Group: 	 Development/Libraries
 Requires: %{imap_libs} = %{version}-%{release}
 # imap -> uw-imap rename
 Obsoletes: imap-devel < 1:%{version}
+# Until F7 merger anyway
 Conflicts: libc-client-devel
 %description devel
 Contains the header files and libraries for developing programs 
@@ -98,7 +102,7 @@ This package contains some utilities for managing UW IMAP email.
 
 
 %prep
-%setup -q -n imap-%{version}
+%setup -q -n imap-%{version}%{?beta}
 
 %patch1 -p1 -b .paths
 
@@ -266,8 +270,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jan 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006e-1
+- imap-2006e
+
 * Mon Dec 18 2006 Rex Dieter <rdieter[AT]fedoraproject.org> 2006d-1
-- imap-2006d
+- imap-2006d (#220121)
 
 * Wed Oct 25 2006 Rex Dieter <rexdieter[AT]users.sf.net> 2006c1-1
 - imap-2006c1
