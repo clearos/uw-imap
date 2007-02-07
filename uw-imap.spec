@@ -1,11 +1,13 @@
 
+# Fedora review: http://bugzilla.redhat.com/166008
+
 #define snap 0701181849
 #define beta .DEV.SNAP-%{snap}
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006e
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -20,7 +22,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define somajor   2006
 %define shlibname lib%{soname}.so.%{somajor}
 %define imap_libs lib%{soname}%{somajor}
-#Old naming
+## Old naming
+#define imap_libs	lib%{soname}
 #define imap_libs	imap-libs
 
 # FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
@@ -28,8 +31,6 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 # imap -> uw-imap rename
 Obsoletes: imap < 1:%{version}
-
-Source10: c-client.cf
 
 # new pam setup, using new "include" feature
 Source21: imap.pam
@@ -68,6 +69,7 @@ Summary: UW C-client mail library
 Group:	 System Environment/Libraries
 Obsoletes: libc-client2004d < 1:2004d-2
 Obsoletes: libc-client2004e < 2004e-2
+Obsoletes: libc-client2004g < 2004g-7
 %description -n %{imap_libs} 
 Provides a common API for accessing mailboxes. 
 
@@ -182,11 +184,12 @@ install -p -m644 -D %{SOURCE33} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop2
 install -p -m644 -D %{SOURCE34} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop3
 install -p -m644 -D %{SOURCE35} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/pop3s
 
-# %ghost *.pem files
+## %ghost'd items 
+# *.pem files
 mkdir -p $RPM_BUILD_ROOT%{sslcerts}/
 touch $RPM_BUILD_ROOT%{sslcerts}/{imapd,ipop3d}.pem
-
-install -p -m644 -D %{SOURCE10} $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
+# c-client.cf
+touch $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
 
 
 # FIXME, do this on daemon startup -- Rex
@@ -271,6 +274,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 07 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006e-3
+- Obsoletes: libc-client2004g
+- cleanup/simplify c-client.cf handling
+
 * Fri Jan 26 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006e-2
 - use /etc/profile.d/krb5-devel.sh
 
