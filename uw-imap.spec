@@ -7,7 +7,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006g
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -129,7 +129,9 @@ GSSDIR=$(krb5-config --prefix)
 
 ## SSL setup
 # probably legacy-only, but shouldn't hurt -- Rex
-export EXTRACFLAGS="$EXTRACFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
+EXTRACFLAGS="$EXTRACFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
+EXTRACFLAGS="$EXTRACFLAGS $RPM_OPT_FLAGS -fno-strict-aliasing -Wno-pointer-sign"
+export EXTRACFLAGS
 
 echo "y" | \
 make %{?_smp_mflags} lnp \
@@ -274,6 +276,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr  2 2007 Joe Orton <jorton@redhat.com> 2006g-2
+- use $RPM_OPT_FLAGS during build
+
 * Mon Apr 02 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006g-1
 - imap-2006g
 
