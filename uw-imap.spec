@@ -6,8 +6,8 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2006e
-Release: 3%{?dist}
+Version: 2006g
+Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -274,6 +274,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr 02 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006g-1
+- imap-2006g
+
 * Wed Feb 07 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006e-3
 - Obsoletes: libc-client2004g
 - cleanup/simplify c-client.cf handling
