@@ -127,11 +127,12 @@ test -f %{_sysconfdir}/profile.d/krb5-devel.sh && source %{_sysconfdir}/profile.
 test -f %{_sysconfdir}/profile.d/krb5.sh && source %{_sysconfdir}/profile.d/krb5.sh
 GSSDIR=$(krb5-config --prefix)
 
-## SSL setup
-# probably legacy-only, but shouldn't hurt -- Rex
-EXTRACFLAGS="$EXTRACFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
-EXTRACFLAGS="$EXTRACFLAGS $RPM_OPT_FLAGS -fno-strict-aliasing -Wno-pointer-sign"
-export EXTRACFLAGS
+# SSL setup, probably legacy-only, but shouldn't hurt -- Rex
+export EXTRACFLAGS="$EXTRACFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
+# $RPM_OPT_FLAGS
+export EXTRACFLAGS="$EXTRACFLAGS $RPM_OPT_FLAGS"
+# jorton added these, I'll assume he knows what he's doing. :) -- Rex
+export EXTRACFLAGS="$EXTRACFLAGS -fno-strict-aliasing -Wno-pointer-sign"
 
 echo "y" | \
 make %{?_smp_mflags} lnp \
@@ -160,10 +161,10 @@ install -p -m755 ./c-client/%{shlibname} $RPM_BUILD_ROOT%{_libdir}/
 ln -s %{shlibname} $RPM_BUILD_ROOT%{_libdir}/lib%{soname}.so
 
 mkdir -p $RPM_BUILD_ROOT%{_includedir}/imap/
-install -m644 ./c-client/*.h $RPM_BUILD_ROOT%{_includedir}/imap
+install -m644 ./c-client/*.h $RPM_BUILD_ROOT%{_includedir}/imap/
 # Added linkage.c to fix (#34658) <mharris>
-install -m644 ./c-client/linkage.c $RPM_BUILD_ROOT%{_includedir}/imap
-install -m644 ./src/osdep/tops-20/shortsym.h $RPM_BUILD_ROOT%{_includedir}/imap
+install -m644 ./c-client/linkage.c $RPM_BUILD_ROOT%{_includedir}/imap/
+install -m644 ./src/osdep/tops-20/shortsym.h $RPM_BUILD_ROOT%{_includedir}/imap/
 
 mkdir -p $RPM_BUILD_ROOT%{_mandir}/man8/
 install -p -m644 src/{ipopd/ipopd,imapd/imapd}.8 $RPM_BUILD_ROOT%{_mandir}/man8/
