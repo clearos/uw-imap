@@ -7,7 +7,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006g
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -44,6 +44,8 @@ Source34: ipop3-xinetd
 Source35: pop3s-xinetd
 
 Patch1: imap-2006-paths.patch
+# See http://bugzilla.redhat.com/229781 , http://bugzilla.redhat.com/127271
+Patch2: imap-2004a-doc.patch
 Patch5: imap-2001a-overflow.patch
 Patch9: imap-2002e-shared.patch
 Patch10: imap-2002e-authmd5.patch
@@ -107,6 +109,7 @@ This package contains some utilities for managing UW IMAP email.
 %setup -q -n imap-%{version}%{?beta}
 
 %patch1 -p1 -b .paths
+%patch2 -p1 -b .doc
 
 %patch5 -p1 -b .overflow
 
@@ -132,7 +135,10 @@ export EXTRACFLAGS="$EXTRACFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
 # $RPM_OPT_FLAGS
 export EXTRACFLAGS="$EXTRACFLAGS $RPM_OPT_FLAGS"
 # jorton added these, I'll assume he knows what he's doing. :) -- Rex
-export EXTRACFLAGS="$EXTRACFLAGS -fno-strict-aliasing -Wno-pointer-sign"
+export EXTRACFLAGS="$EXTRACFLAGS -fno-strict-aliasing"
+%if 0%{?fedora} > 4 || 0%{?rhel} > 4
+export EXTRACFLAGS="$EXTRACFLAGS -Wno-pointer-sign"
+%endif
 
 echo "y" | \
 make %{?_smp_mflags} lnp \
@@ -277,6 +283,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 27 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006g-3
+- imap-2004a-doc.patch (#229781,#127271)
+
 * Mon Apr  2 2007 Joe Orton <jorton@redhat.com> 2006g-2
 - use $RPM_OPT_FLAGS during build
 
