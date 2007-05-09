@@ -72,6 +72,10 @@ Group:	 System Environment/Libraries
 Obsoletes: libc-client2004d < 1:2004d-2
 Obsoletes: libc-client2004e < 2004e-2
 Obsoletes: libc-client2004g < 2004g-7
+%if 0%{?fedora} > 6
+# not strictly needed, but cleaner uprade path
+Obsoletes: libc-client < %{version}-%{release}
+%endif
 %description -n %{imap_libs} 
 Provides a common API for accessing mailboxes. 
 
@@ -81,8 +85,10 @@ Group: 	 Development/Libraries
 Requires: %{imap_libs} = %{version}-%{release}
 # imap -> uw-imap rename
 Obsoletes: imap-devel < 1:%{version}
-# Until F7 merger anyway
-Conflicts: libc-client-devel
+%if 0%{?fedora} > 6
+Obsoletes: libc-client-devel < %{version}-%{release}
+Provides:  libc-client-devel = %{version}-%{release}
+%endif
 %description devel
 Contains the header files and libraries for developing programs 
 which will use the UW C-client common API.
@@ -283,8 +289,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Wed May 02 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006h-1
+* Wed May 09 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006h-1
 - imap-2006h
+- Obsolete pre-merge libc-client pkgs
 
 * Fri Apr 27 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006g-3
 - imap-2004a-doc.patch (#229781,#127271)
