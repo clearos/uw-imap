@@ -4,9 +4,11 @@
 #define snap 0701181849
 #define beta .DEV.SNAP-%{snap}
 
+%define beta 1
+
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2006i
+Version: 2006j
 Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
@@ -112,7 +114,7 @@ This package contains some utilities for managing UW IMAP email.
 
 
 %prep
-%setup -q -n imap-%{version}%{?beta}
+%setup -q -n imap-%{version}
 
 %patch1 -p1 -b .paths
 %patch2 -p1 -b .doc
@@ -289,6 +291,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jul 09 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006j-1
+- imap-2006j1
+
 * Wed Jun 13 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006i-1
 - imap-2006i
 
