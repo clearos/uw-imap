@@ -1,15 +1,12 @@
 
 # Fedora review: http://bugzilla.redhat.com/166008
 
-#define snap 0701181849
-#define beta .DEV.SNAP-%{snap}
-
-%define beta 1
+%define beta 2 
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006j
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: Apache 2.0 
@@ -26,7 +23,6 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define imap_libs lib%{soname}%{somajor}
 ## Old naming
 #define imap_libs	lib%{soname}
-#define imap_libs	imap-libs
 
 # FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
 %global sslcerts  %(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)
@@ -291,6 +287,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jul 17 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006j-2
+- imap-2006j2
+
 * Mon Jul 09 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006j-1
 - imap-2006j1
 
