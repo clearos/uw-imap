@@ -6,10 +6,10 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2006j
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
-License: Apache 2.0 
+License: ASL 2.0 
 Group: 	 System Environment/Daemons
 URL:	 http://www.washington.edu/imap/
 # Old (non-latest) releases live at  ftp://ftp.cac.washington.edu/imap/old/
@@ -287,6 +287,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Aug 21 2007 Joe Orton <jorton@redhat.com> 2006j-3
+- fix License
+
 * Tue Jul 17 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006j-2
 - imap-2006j2
 
