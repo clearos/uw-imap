@@ -1,19 +1,21 @@
 
 # Fedora review: http://bugzilla.redhat.com/166008
 
-%define beta 2 
+#define beta
+%define dev .DEV.SNAP-
+%define snap 0709171900
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2006j
-Release: 3%{?dist}
+Version: 2006k
+Release: 0.1.%{?snap}%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
 Group: 	 System Environment/Daemons
 URL:	 http://www.washington.edu/imap/
 # Old (non-latest) releases live at  ftp://ftp.cac.washington.edu/imap/old/
-Source0: ftp://ftp.cac.washington.edu/imap/imap-%{version}%{?beta}.tar.Z
+Source0: ftp://ftp.cac.washington.edu/imap/imap-%{version}%{?beta}%{?dev}%{?snap}.tar.Z
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %define soname    c-client
@@ -110,7 +112,7 @@ This package contains some utilities for managing UW IMAP email.
 
 
 %prep
-%setup -q -n imap-%{version}
+%setup -q -n imap-%{version}%{?dev}%{?snap}
 
 %patch1 -p1 -b .paths
 %patch2 -p1 -b .doc
@@ -287,6 +289,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Sep 19 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006k-0.1.0709171900
+- imap-2006k.DEV.SNAP-0709171900
+
 * Tue Aug 21 2007 Joe Orton <jorton@redhat.com> 2006j-3
 - fix License
 
