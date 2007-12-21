@@ -7,8 +7,8 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2006k
-Release: 2%{?dist}
+Version: 2007
+Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -20,7 +20,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %define soname    c-client
 #define somajor   %{version} 
-%define somajor   2006
+%define somajor   2007
 %define shlibname lib%{soname}.so.%{somajor}
 %define imap_libs lib%{soname}%{somajor}
 ## Old naming
@@ -43,7 +43,7 @@ Source33: ipop2-xinetd
 Source34: ipop3-xinetd
 Source35: pop3s-xinetd
 
-Patch1: imap-2006-paths.patch
+Patch1: imap-2007-paths.patch
 # See http://bugzilla.redhat.com/229781 , http://bugzilla.redhat.com/127271
 Patch2: imap-2004a-doc.patch
 Patch5: imap-2001a-overflow.patch
@@ -289,6 +289,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Dec 21 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2007-1
+- imap-2007
+
 * Tue Dec 04 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2006k-2
 - respin for new openssl
 
