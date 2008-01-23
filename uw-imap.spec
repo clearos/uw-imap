@@ -8,7 +8,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -22,9 +22,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #define somajor   %{version} 
 %define somajor   2007
 %define shlibname lib%{soname}.so.%{somajor}
-%define imap_libs lib%{soname}%{somajor}
-## Old naming
-#define imap_libs	lib%{soname}
+#define imap_libs lib%{soname}%{somajor}
+%define imap_libs	lib%{soname}
 
 # FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
 %global sslcerts  %(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)
@@ -72,10 +71,8 @@ Group:	 System Environment/Libraries
 Obsoletes: libc-client2004d < 1:2004d-2
 Obsoletes: libc-client2004e < 2004e-2
 Obsoletes: libc-client2004g < 2004g-7
-%if 0%{?fedora} > 6
-# not strictly needed, but cleaner uprade path
-Obsoletes: libc-client < %{version}-%{release}
-%endif
+Obsoletes: libc-client2006 < 2006k-1
+Obsoletes: libc-client2007 < 2007-2
 %description -n %{imap_libs} 
 Provides a common API for accessing mailboxes. 
 
@@ -85,10 +82,8 @@ Group: 	 Development/Libraries
 Requires: %{imap_libs} = %{version}-%{release}
 # imap -> uw-imap rename
 Obsoletes: imap-devel < 1:%{version}
-%if 0%{?fedora} > 6
 Obsoletes: libc-client-devel < %{version}-%{release}
 Provides:  libc-client-devel = %{version}-%{release}
-%endif
 %description devel
 Contains the header files and libraries for developing programs 
 which will use the UW C-client common API.
@@ -289,6 +284,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jan 23 2008 Rex Dieter <rdieter@fedoraproject.org> 2007-2
+- Obsoletes: libc-client2006 (#429796)
+- drop libc-client hacks for parallel-installability, fun while it lasted
+
 * Fri Dec 21 2007 Rex Dieter <rdieter[AT]fedoraproject.org> 2007-1
 - imap-2007
 
