@@ -8,7 +8,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007
-Release: 2%{?dist}
+Release: 3%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -284,6 +284,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Feb 08 2008 Rex Dieter <rdieter@fedoraproject.org> 2007-3 
+- respin (gcc43)
+
 * Wed Jan 23 2008 Rex Dieter <rdieter@fedoraproject.org> 2007-2
 - Obsoletes: libc-client2006 (#429796)
 - drop libc-client hacks for parallel-installability, fun while it lasted
