@@ -22,8 +22,12 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #define somajor   %{version} 
 %define somajor   2007
 %define shlibname lib%{soname}.so.%{somajor}
-#define imap_libs lib%{soname}%{somajor}
-%define imap_libs	lib%{soname}
+%if 0%{?rhel} > 3
+# rhel (still) requires paralell-installable shlib
+%define imap_libs lib%{soname}%{somajor}
+%else
+%define imap_libs lib%{soname}
+%endif
 
 # FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
 %global sslcerts  %(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)
