@@ -1,13 +1,18 @@
 
 # Fedora review: http://bugzilla.redhat.com/166008
 
-#define beta
+#define beta 1
 #define dev .DEV.SNAP-
 #define snap 0709171900
 
+# ship static lib, matches default upstream config
+# as convenience to users, since our hacked shlib can potentially break 
+# abi semi-often
+%define _with_static 1
+
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2007a
+Version: 2007a1
 Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
@@ -22,12 +27,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #define somajor   %{version} 
 %define somajor   2007
 %define shlibname lib%{soname}.so.%{somajor}
-%if 0%{?rhel} > 3
-# rhel (still) requires paralell-installable shlib
-%define imap_libs lib%{soname}%{somajor}
-%else
+# rhel (still) requires paralell-installable shlib?
+#define imap_libs lib%{soname}%{somajor}
 %define imap_libs lib%{soname}
-%endif
 
 # FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
 %global sslcerts  %(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)
@@ -98,7 +100,7 @@ Group:   Development/Libraries
 Requires: %{name}-devel = %{version}-%{release}
 Requires: krb5-devel openssl-devel pam-devel
 %description static 
-Contains static libraries for developing programs
+Contains static libraries for developing programs 
 which will use the UW C-client common API.
 
 %package utils
@@ -107,11 +109,18 @@ Group: 	 Applications/System
 # imap -> uw-imap rename
 Obsoletes: imap-utils < 1:%{version}
 %description utils
-This package contains some utilities for managing UW IMAP email.
+This package contains some utilities for managing UW IMAP email,including:
+* dmail : procmail Mail Delivery Module
+* mailutil : mail utility program
+* mtest : C client test program
+* tmail : Mail Delivery Module
+* mlock
+
 
 
 %prep
-%setup -q -n imap-%{version}%{?dev}%{?snap}
+#setup -q -n imap-%{version}%{?dev}%{?snap}
+%setup -q -n imap-2007a
 
 %patch1 -p1 -b .paths
 %patch2 -p1 -b .doc
@@ -206,7 +215,7 @@ touch $RPM_BUILD_ROOT%{sslcerts}/{imapd,ipop3d}.pem
 touch $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
 
 
-# FIXME, do this on daemon startup -- Rex
+# FIXME -- Rex
 %post
 {
 cd %{sslcerts} &> /dev/null || :
@@ -288,6 +297,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 19 2008 Rex Dieter <rdieter@fedoraproject.org> 2007a1-1
+- imap-2007a1
+- include static lib
+- utils: update %%description
+
 * Thu Mar 13 2008 Rex Dieter <rdieter@fedoraproject.org> 2007a-1
 - imap-2007a
 
