@@ -13,7 +13,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007a1
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -186,8 +186,9 @@ install -m644 ./c-client/*.h $RPM_BUILD_ROOT%{_includedir}/imap/
 install -m644 ./c-client/linkage.c $RPM_BUILD_ROOT%{_includedir}/imap/
 install -m644 ./src/osdep/tops-20/shortsym.h $RPM_BUILD_ROOT%{_includedir}/imap/
 
-mkdir -p $RPM_BUILD_ROOT%{_mandir}/man8/
-install -p -m644 src/{ipopd/ipopd,imapd/imapd}.8 $RPM_BUILD_ROOT%{_mandir}/man8/
+install -p -D -m644 src/imapd/imapd.8 $RPM_BUILD_ROOT%{_mandir}/man8/imapd.8uw
+install -p -D -m644 src/ipopd/ipopd.8 $RPM_BUILD_ROOT%{_mandir}/man8/ipopd.8uw
+
 mkdir -p $RPM_BUILD_ROOT%{_sbindir}
 install -p -m755 ipopd/ipop{2d,3d} $RPM_BUILD_ROOT%{_sbindir}/
 install -p -m755 imapd/imapd $RPM_BUILD_ROOT%{_sbindir}/
@@ -297,6 +298,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 19 2008 Rex Dieter <rdieter@fedoraproject.org> 2007a1-2
+- uw-imap conflicts with cyrus-imapd (#222486)
+
 * Wed Mar 19 2008 Rex Dieter <rdieter@fedoraproject.org> 2007a1-1
 - imap-2007a1
 - include static lib
