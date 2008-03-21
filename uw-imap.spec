@@ -27,7 +27,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #define somajor   %{version} 
 %define somajor   2007
 %define shlibname lib%{soname}.so.%{somajor}
-%if 0%{?fedora} > 2 || %{?rhel} > 5
+%if 0%{?fedora} > 2 || 0%{?rhel} > 5
 %define imap_libs lib%{soname}
 %else
 # rhel (4,5) requires parallel-installable shlib, to not conflict with 
