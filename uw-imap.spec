@@ -13,7 +13,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007a1
-Release: 2%{?dist}
+Release: 2%{?dist}.1
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -97,6 +97,8 @@ Obsoletes: imap-devel < 1:%{version}
 %if "%{imap_libs}" == "libc-client"
 Obsoletes: libc-client-devel < %{version}-%{release}
 Provides:  libc-client-devel = %{version}-%{release}
+%else
+Conflicts: libc-client-devel < %{version}-%{release}
 %endif
 %description devel
 Contains the header files and libraries for developing programs 
