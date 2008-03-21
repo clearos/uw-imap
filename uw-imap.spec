@@ -27,9 +27,13 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #define somajor   %{version} 
 %define somajor   2007
 %define shlibname lib%{soname}.so.%{somajor}
-# rhel (still) requires paralell-installable shlib?
-#define imap_libs lib%{soname}%{somajor}
+%if 0%{?fedora} > 2 || %{?rhel} > 5
 %define imap_libs lib%{soname}
+%else
+# rhel (4,5) requires parallel-installable shlib, to not conflict with 
+# os-provided libc-client
+%define imap_libs lib%{soname}%{somajor}
+%endif
 
 # FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
 %global sslcerts  %(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)
@@ -78,7 +82,9 @@ Obsoletes: libc-client2004d < 1:2004d-2
 Obsoletes: libc-client2004e < 2004e-2
 Obsoletes: libc-client2004g < 2004g-7
 Obsoletes: libc-client2006 < 2006k-1
+%if "%{imap_libs}" != "libc-client2007"
 Obsoletes: libc-client2007 < 2007-2
+%endif
 %description -n %{imap_libs} 
 Provides a common API for accessing mailboxes. 
 
@@ -88,8 +94,10 @@ Group: 	 Development/Libraries
 Requires: %{imap_libs} = %{version}-%{release}
 # imap -> uw-imap rename
 Obsoletes: imap-devel < 1:%{version}
+%if "%{imap_libs}" == "libc-client"
 Obsoletes: libc-client-devel < %{version}-%{release}
 Provides:  libc-client-devel = %{version}-%{release}
+%endif
 %description devel
 Contains the header files and libraries for developing programs 
 which will use the UW C-client common API.
@@ -98,6 +106,7 @@ which will use the UW C-client common API.
 Summary: UW IMAP static library
 Group:   Development/Libraries
 Requires: %{name}-devel = %{version}-%{release}
+#Provides: libc-client-static = %{version}-%{release}
 Requires: krb5-devel openssl-devel pam-devel
 %description static 
 Contains static libraries for developing programs 
