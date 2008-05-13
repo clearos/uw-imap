@@ -13,7 +13,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007a1
-Release: 2%{?dist}.1
+Release: 3%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -81,7 +81,7 @@ Group:	 System Environment/Libraries
 Obsoletes: libc-client2004d < 1:2004d-2
 Obsoletes: libc-client2004e < 2004e-2
 Obsoletes: libc-client2004g < 2004g-7
-Obsoletes: libc-client2006 < 2006k-1
+Obsoletes: libc-client2006 < 2006k-2
 %if "%{imap_libs}" != "libc-client2007"
 Obsoletes: libc-client2007 < 2007-2
 %endif
@@ -309,6 +309,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue May 18 2008 Rex Dieter <rdieter@fedoraproject.org> 2007a1-3
+- libc-client: incomplete list of obsoletes (#446240)
+
 * Wed Mar 19 2008 Rex Dieter <rdieter@fedoraproject.org> 2007a1-2
 - uw-imap conflicts with cyrus-imapd (#222486)
 
