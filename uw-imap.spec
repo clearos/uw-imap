@@ -308,7 +308,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Fri Jun 13 2008 Rex Dieter <rdieter@fedoraproject.org> 2.007b-1
+* Fri Jun 13 2008 Rex Dieter <rdieter@fedoraproject.org> 2007b-1
 - imap-2007b
 
 * Tue May 18 2008 Rex Dieter <rdieter@fedoraproject.org> 2007a1-3
