@@ -1,3 +1,4 @@
+%define _default_patch_fuzz 2
 
 # Fedora review: http://bugzilla.redhat.com/166008
 
@@ -13,7 +14,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007b
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -308,6 +309,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Oct 01 2008 Rex Dieter <rdieter@fedoraproject.org> 2007b-2
+- fix build (patch fuzz) (#464985)
+
 * Fri Jun 13 2008 Rex Dieter <rdieter@fedoraproject.org> 2007b-1
 - imap-2007b
 
