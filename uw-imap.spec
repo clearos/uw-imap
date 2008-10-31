@@ -13,15 +13,15 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2007b
-Release: 2%{?dist}
+Version: 2007d
+Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
 Group: 	 System Environment/Daemons
 URL:	 http://www.washington.edu/imap/
 # Old (non-latest) releases live at  ftp://ftp.cac.washington.edu/imap/old/
-Source0: ftp://ftp.cac.washington.edu/imap/imap-%{version}%{?beta}%{?dev}%{?snap}.tar.Z
+Source0: ftp://ftp.cac.washington.edu/imap/imap-%{version}%{?beta}%{?dev}%{?snap}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %define soname    c-client
@@ -309,6 +309,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Oct 31 2008 Rex Dieter <rdieter@fedoraproject.org> 2007d-1
+- imap-2007d
+
 * Wed Oct 01 2008 Rex Dieter <rdieter@fedoraproject.org> 2007b-2
 - fix build (patch fuzz) (#464985)
 
