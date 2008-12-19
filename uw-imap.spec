@@ -13,7 +13,7 @@
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
-Version: 2007d
+Version: 2007e
 Release: 1%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
@@ -309,6 +309,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Dec 19 2008 Rex Dieter <rdieter@fedoraproject.org> 2007e-1
+- imap-2007e
+
 * Fri Oct 31 2008 Rex Dieter <rdieter@fedoraproject.org> 2007d-1
 - imap-2007d
 
