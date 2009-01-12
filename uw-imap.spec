@@ -14,7 +14,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007e
-Release: 1%{?dist}
+Release: 2%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -68,6 +68,8 @@ BuildRequires: pam-devel
 Prereq: xinetd
 Requires(post): openssl
 
+Requires: %{imap_libs} = %{version}-%{release}
+
 %description
 The %{name} package provides UW server daemons for both the IMAP (Internet
 Message Access Protocol) and POP (Post Office Protocol) mail access
@@ -118,6 +120,7 @@ which will use the UW C-client common API.
 %package utils
 Summary: UW IMAP Utilities to make managing your email simpler
 Group: 	 Applications/System 
+Requires: %{imap_libs} = %{version}-%{release}
 # imap -> uw-imap rename
 Obsoletes: imap-utils < 1:%{version}
 %description utils
@@ -309,6 +312,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jan 12 2009 Rex Dieter <rdieter@fedoraproject.org> 2007e-2
+- main/-utils: +Req: %%{imap_libs} = %{version}-%{release}
+
 * Fri Dec 19 2008 Rex Dieter <rdieter@fedoraproject.org> 2007e-1
 - imap-2007e
 
