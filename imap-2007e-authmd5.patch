@@ -1,10 +1,7 @@
-
-Make some more functions static to prevent such horrible namespace
-pollution.
-
---- imap-2002e/src/c-client/auth_md5.c.authmd5	2004-03-02 17:25:43.000000000 +0000
-+++ imap-2002e/src/c-client/auth_md5.c	2004-03-02 17:25:51.000000000 +0000
-@@ -34,17 +34,17 @@
+diff -up imap-2007e/src/c-client/auth_md5.c.authmd5 imap-2007e/src/c-client/auth_md5.c
+--- imap-2007e/src/c-client/auth_md5.c.authmd5	2008-06-04 13:18:34.000000000 -0500
++++ imap-2007e/src/c-client/auth_md5.c	2009-07-07 19:24:12.348005485 -0500
+@@ -42,17 +42,17 @@ typedef struct {
  
  /* Prototypes */
  

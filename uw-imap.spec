@@ -1,10 +1,5 @@
-%define _default_patch_fuzz 2
 
 # Fedora review: http://bugzilla.redhat.com/166008
-
-#define beta 1
-#define dev .DEV.SNAP-
-#define snap 0709171900
 
 # ship static lib, matches default upstream config
 # as convenience to users, since our hacked shlib can potentially break 
@@ -14,7 +9,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007e
-Release: 5%{?dist}
+Release: 6%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -56,9 +51,9 @@ Source35: pop3s-xinetd
 Patch1: imap-2007-paths.patch
 # See http://bugzilla.redhat.com/229781 , http://bugzilla.redhat.com/127271
 Patch2: imap-2004a-doc.patch
-Patch5: imap-2001a-overflow.patch
-Patch9: imap-2002e-shared.patch
-Patch10: imap-2002e-authmd5.patch
+Patch5: imap-2007e-overflow.patch
+Patch9: imap-2007e-shared.patch
+Patch10: imap-2007e-authmd5.patch
 
 BuildRequires: krb5-devel
 BuildRequires: openssl-devel
@@ -312,6 +307,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jul 07 2009 Rex Dieter <rdieter@fedoraproject.org> - 2007e-6
+- update shared.patch to build with -fPIC
+- rebase patches (patch fuzz=0)
+
 * Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2007e-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
