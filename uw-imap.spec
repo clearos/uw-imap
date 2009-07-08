@@ -156,7 +156,7 @@ GSSDIR=$(krb5-config --prefix)
 # SSL setup, probably legacy-only, but shouldn't hurt -- Rex
 export EXTRACFLAGS="$EXTRACFLAGS $(pkg-config --cflags openssl 2>/dev/null)"
 # $RPM_OPT_FLAGS
-export EXTRACFLAGS="$EXTRACFLAGS $RPM_OPT_FLAGS"
+export EXTRACFLAGS="$EXTRACFLAGS -fPIC $RPM_OPT_FLAGS"
 # jorton added these, I'll assume he knows what he's doing. :) -- Rex
 export EXTRACFLAGS="$EXTRACFLAGS -fno-strict-aliasing"
 %if 0%{?fedora} > 4 || 0%{?rhel} > 4
@@ -308,7 +308,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Tue Jul 07 2009 Rex Dieter <rdieter@fedoraproject.org> - 2007e-6
-- update shared.patch to build with -fPIC
+- build with -fPIC
 - rebase patches (patch fuzz=0)
 
 * Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2007e-5
