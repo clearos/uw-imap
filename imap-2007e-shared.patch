@@ -57,7 +57,7 @@ diff -up imap-2007e/src/osdep/unix/Makefile.shared imap-2007e/src/osdep/unix/Mak
  	OSCFLAGS
 +
 +osdep.o:	$(OSDEPS)
-+	$(CC) $(CFLAGS) `$(CAT) OSCFLAGS` -c osdep.c
++	$(CC) -fPIC -DPIC -D_REENTRANT `$(CAT) CFLAGS` `$(CAT) OSCFLAGS` -c osdep.c
 +	@echo ========================================================================
  	@echo Building OS-dependent module
  	@echo If you get No such file error messages for files x509.h, ssl.h,
@@ -68,7 +68,7 @@ diff -up imap-2007e/src/osdep/unix/Makefile.shared imap-2007e/src/osdep/unix/Mak
 +	@echo ========================================================================
 +
 +osdep.so:	$(OSDEPS)
-+	$(CC) -fPIC -DPIC -D_REENTRANT -c $(CFLAGS) `cat OSCFLAGS` osdep.c -o $@
++	$(CC) -fPIC -DPIC -D_REENTRANT `$(CAT) CFLAGS` `cat OSCFLAGS` -c osdep.c -o $@
  
  osdep.c: osdepbas.c osdepckp.c osdeplog.c osdepssl.c
  	$(CAT) osdepbas.c osdepckp.c osdeplog.c osdepssl.c > osdep.c

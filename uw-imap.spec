@@ -9,7 +9,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007e
-Release: 6%{?dist}
+Release: 7%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -307,6 +307,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul 08 2009 Rex Dieter <rdieter@fedoraproject.org> - 2007e-7
+- fix shared.patch to use CFLAGS for osdep.c too
+
 * Tue Jul 07 2009 Rex Dieter <rdieter@fedoraproject.org> - 2007e-6
 - build with -fPIC
 - rebase patches (patch fuzz=0)
