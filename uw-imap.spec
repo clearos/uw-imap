@@ -1,10 +1,13 @@
 
 # Fedora review: http://bugzilla.redhat.com/166008
 
+%if 0%{?fedora}
+%define _with_devel 1
 # ship static lib, matches default upstream config
 # as convenience to users, since our hacked shlib can potentially break 
 # abi semi-often
 %define _with_static 1
+%endif
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
@@ -181,12 +184,14 @@ rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/
 
-%if "%{?_with_static:1}" == "1"
+%if 0%{?_with_static:1}
 install -p -m644 ./c-client/c-client.a $RPM_BUILD_ROOT%{_libdir}/
 ln -s c-client.a $RPM_BUILD_ROOT%{_libdir}/libc-client.a
 %endif
 
 install -p -m755 ./c-client/%{shlibname} $RPM_BUILD_ROOT%{_libdir}/
+
+%if 0%{?_with_devel:1}
 ln -s %{shlibname} $RPM_BUILD_ROOT%{_libdir}/lib%{soname}.so
 
 mkdir -p $RPM_BUILD_ROOT%{_includedir}/imap/
@@ -194,6 +199,7 @@ install -m644 ./c-client/*.h $RPM_BUILD_ROOT%{_includedir}/imap/
 # Added linkage.c to fix (#34658) <mharris>
 install -m644 ./c-client/linkage.c $RPM_BUILD_ROOT%{_includedir}/imap/
 install -m644 ./src/osdep/tops-20/shortsym.h $RPM_BUILD_ROOT%{_includedir}/imap/
+%endif
 
 install -p -D -m644 src/imapd/imapd.8 $RPM_BUILD_ROOT%{_mandir}/man8/imapd.8uw
 install -p -D -m644 src/ipopd/ipopd.8 $RPM_BUILD_ROOT%{_mandir}/man8/ipopd.8uw
@@ -225,7 +231,7 @@ touch $RPM_BUILD_ROOT%{sslcerts}/{imapd,ipop3d}.pem
 touch $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
 
 
-# FIXME -- Rex
+# FIXME, do on first launch (or not at all?), not here -- Rex
 %post
 {
 cd %{sslcerts} &> /dev/null || :
@@ -293,12 +299,14 @@ rm -rf $RPM_BUILD_ROOT
 %ghost %config(missingok,noreplace) %{_sysconfdir}/c-client.cf
 %{_libdir}/lib%{soname}.so.*
 
+%if 0%{?_with_devel:1}
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/imap/
 %{_libdir}/lib%{soname}.so
+%endif
 
-%if "%{?_with_static:1}" == "1"
+%if 0%{?_with_static:1}
 %files static
 %defattr(-,root,root,-)
 %{_libdir}/c-client.a
@@ -307,6 +315,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 31 2009 Rex Dieter <rdieter@fedoraproject.org> 
+- omit -devel, -static bits in EPEL builds (#518885)
+
 * Fri Aug 21 2009 Tomas Mraz <tmraz@redhat.com> - 2007e-9
 - rebuilt with new openssl
 
