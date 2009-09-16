@@ -12,7 +12,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007e
-Release: 9%{?dist}
+Release: 10%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -40,6 +40,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # imap -> uw-imap rename
 Obsoletes: imap < 1:%{version}
 
+# newest pam setup, using password-auth common PAM
+Source20: imap-password.pam
 # new pam setup, using new "include" feature
 Source21: imap.pam
 # legacy/old pam setup, using pam_stack.so
@@ -142,10 +144,14 @@ This package contains some utilities for managing UW IMAP email,including:
 %patch9 -p1 -b .shared
 %patch10 -p1 -b .authmd5
 
+%if 0%{?fedora} > 11 || 0%{?rhel} > 5
+install -p -m644 %{SOURCE20} imap.pam
+%else 
 %if 0%{?fedora} > 4 || 0%{?rhel} > 4
 install -p -m644 %{SOURCE21} imap.pam
 %else
 install -p -m644 %{SOURCE22} imap.pam
+%endif
 %endif
 
 
@@ -315,6 +321,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Sep 16 2009 Tomas Mraz <tmraz@redhat.com> - 2007e-10
+- use password-auth common PAM configuration instead of system-auth
+  where available
+
 * Mon Aug 31 2009 Rex Dieter <rdieter@fedoraproject.org> 
 - omit -devel, -static bits in EPEL builds (#518885)
 
