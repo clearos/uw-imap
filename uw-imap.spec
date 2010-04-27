@@ -233,8 +233,8 @@ install -p -m644 -D %{SOURCE35} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/pop3s
 
 ## %ghost'd items 
 # *.pem files
-mkdir -p $RPM_BUILD_ROOT%{sslcerts}/
-touch $RPM_BUILD_ROOT%{sslcerts}/{imapd,ipop3d}.pem
+mkdir -p $RPM_BUILD_ROOT%{ssldir}/certs}/
+touch $RPM_BUILD_ROOT%{ssldir}/certs/{imapd,ipop3d}.pem
 # c-client.cf
 touch $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
 
@@ -242,7 +242,7 @@ touch $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
 # FIXME, do on first launch (or not at all?), not here -- Rex
 %post
 {
-cd %{sslcerts} &> /dev/null || :
+cd %{ssldir}/certs &> /dev/null || :
 for CERT in imapd.pem ipop3d.pem ;do
    if [ ! -e $CERT ];then
       if [ -e stunnel.pem ];then
@@ -287,8 +287,8 @@ rm -rf $RPM_BUILD_ROOT
 # do this in a %trigger or something not here... -- Rex
 %config(noreplace) %{_sysconfdir}/xinetd.d/imaps
 %config(noreplace) %{_sysconfdir}/xinetd.d/pop3s
-%attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{sslcerts}/imapd.pem
-%attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{sslcerts}/ipop3d.pem
+%attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{ssldir}/certs/imapd.pem
+%attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{ssldir}/certs/ipop3d.pem
 %{_mandir}/man8/*
 %{_sbindir}/ipop2d
 %{_sbindir}/ipop3d
@@ -504,7 +504,7 @@ rm -rf $RPM_BUILD_ROOT
 * Mon Aug 15 2005 Rex Dieter <rexdieter[AT]users.sf.net> 2004e-1
 - imap-2004e
 - rename: imap -> uw-imap (yay, we get to drop the Epoch)
-- sslcerts=%{_sysconfdir}/pki/tls/certs if exists, else /usr/share/ssl/certs
+- sslcerts=%%{_sysconfdir}/pki/tls/certs if exists, else /usr/share/ssl/certs
 
 * Fri Apr 29 2005 Rex Dieter <rexdieter[AT]users.sf.net> 1:2004d-1
 - 2004d
