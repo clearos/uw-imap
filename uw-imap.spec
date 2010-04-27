@@ -233,7 +233,7 @@ install -p -m644 -D %{SOURCE35} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/pop3s
 
 ## %ghost'd items 
 # *.pem files
-mkdir -p $RPM_BUILD_ROOT%{ssldir}/certs}/
+mkdir -p $RPM_BUILD_ROOT%{ssldir}/certs
 touch $RPM_BUILD_ROOT%{ssldir}/certs/{imapd,ipop3d}.pem
 # c-client.cf
 touch $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
