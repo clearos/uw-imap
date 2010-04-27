@@ -12,7 +12,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007e
-Release: 10%{?dist}
+Release: 11%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -34,8 +34,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define imap_libs lib%{soname}%{somajor}
 %endif
 
-# FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
-%global sslcerts  %(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)
+# FC4+ uses %%_sysconfdir/pki/tls, previous releases used %%_datadir/ssl
+%global ssldir  %(if [ -d %{_sysconfdir}/pki/tls ]; then echo "%{_sysconfdir}/pki/tls"; else echo "%{_datadir}/ssl"; fi)
 
 # imap -> uw-imap rename
 Obsoletes: imap < 1:%{version}
@@ -64,8 +64,9 @@ BuildRequires: krb5-devel
 BuildRequires: openssl-devel
 BuildRequires: pam-devel
 
-# Prereq is shorter than separate Requires, Requires(post), Requires(postun)
-Prereq: xinetd
+Requires: xinetd
+Requires(post): xinetd
+Requires(postun): xinetd
 Requires(post): openssl
 
 Requires: %{imap_libs} = %{version}-%{release}
@@ -172,12 +173,13 @@ export EXTRACFLAGS="$EXTRACFLAGS -fno-strict-aliasing"
 export EXTRACFLAGS="$EXTRACFLAGS -Wno-pointer-sign"
 %endif
 
-echo "y" | \
+echo -e "y\ny" | \
 make %{?_smp_mflags} lnp \
+IP=6 \
 EXTRACFLAGS="$EXTRACFLAGS" \
 EXTRALDFLAGS="$EXTRALDFLAGS" \
 EXTRAAUTHENTICATORS=gss \
-SPECIALS="GSSDIR=${GSSDIR} LOCKPGM=%{_sbindir}/mlock SSLCERTS=%{sslcerts} SSLDIR=%{_datadir}/ssl SSLINCLUDE=%{_includedir}/openssl SSLLIB=%{_libdir}" \
+SPECIALS="GSSDIR=${GSSDIR} LOCKPGM=%{_sbindir}/mlock SSLCERTS=%{ssldir}/certs SSLDIR=%{ssldir} SSLINCLUDE=%{_includedir}/openssl SSLKEYS=%{ssldir}/private SSLLIB=%{_libdir}" \
 SSLTYPE=unix \
 CCLIENTLIB=$(pwd)/c-client/%{shlibname} \
 SHLIBBASE=%{soname} \
@@ -321,6 +323,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Apr 27 2010 Rex Dieter <rdieter@fedoraproject.org> - 2007e-11
+- SSL connection through IPv6 fails (#485860)
+- fix SSLDIR, set SSLKEYS
+
 * Wed Sep 16 2009 Tomas Mraz <tmraz@redhat.com> - 2007e-10
 - use password-auth common PAM configuration instead of system-auth
   where available
