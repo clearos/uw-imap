@@ -12,7 +12,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007e
-Release: 11%{?dist}
+Release: 12%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -323,6 +323,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2007e-12
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Tue Apr 27 2010 Rex Dieter <rdieter@fedoraproject.org> - 2007e-11
 - SSL connection through IPv6 fails (#485860)
 - fix SSLDIR, set SSLKEYS
