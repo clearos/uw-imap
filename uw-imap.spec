@@ -9,10 +9,14 @@
 %define _with_static 1
 %endif
 
+%if 0%{?rhel} > 5
+%define _with_system_libc_client 1
+%endif
+
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007e
-Release: 10%{?dist}
+Release: 13%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -34,8 +38,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %define imap_libs lib%{soname}%{somajor}
 %endif
 
-# FC4+ uses %%_sysconfdir/pki/tls/certs, previous releases used %%_datadir/ssl/certs
-%global sslcerts  %(if [ -d %{_sysconfdir}/pki/tls/certs ]; then echo "%{_sysconfdir}/pki/tls/certs"; else echo "%{_datadir}/ssl/certs"; fi)
+# FC4+ uses %%_sysconfdir/pki/tls, previous releases used %%_datadir/ssl
+%global ssldir  %(if [ -d %{_sysconfdir}/pki/tls ]; then echo "%{_sysconfdir}/pki/tls"; else echo "%{_datadir}/ssl"; fi)
 
 # imap -> uw-imap rename
 Obsoletes: imap < 1:%{version}
@@ -59,16 +63,18 @@ Patch2: imap-2004a-doc.patch
 Patch5: imap-2007e-overflow.patch
 Patch9: imap-2007e-shared.patch
 Patch10: imap-2007e-authmd5.patch
+Patch11: imap-2007e-system_c_client.patch
 
 BuildRequires: krb5-devel
 BuildRequires: openssl-devel
 BuildRequires: pam-devel
 
-# Prereq is shorter than separate Requires, Requires(post), Requires(postun)
-Prereq: xinetd
+Requires: xinetd
 Requires(post): openssl
 
-Requires: %{imap_libs} = %{version}-%{release}
+%if ! 0%{?_with_system_libc_client}
+Requires: %{imap_libs}%{?_isa} = %{version}-%{release}
+%endif
 
 %description
 The %{name} package provides UW server daemons for both the IMAP (Internet
@@ -94,7 +100,7 @@ Provides a common API for accessing mailboxes.
 %package devel
 Summary: Development tools for programs which will use the UW IMAP library
 Group: 	 Development/Libraries
-Requires: %{imap_libs} = %{version}-%{release}
+Requires: %{imap_libs}%{?_isa} = %{version}-%{release}
 # imap -> uw-imap rename
 Obsoletes: imap-devel < 1:%{version}
 %if "%{imap_libs}" == "libc-client"
@@ -120,7 +126,9 @@ which will use the UW C-client common API.
 %package utils
 Summary: UW IMAP Utilities to make managing your email simpler
 Group: 	 Applications/System 
-Requires: %{imap_libs} = %{version}-%{release}
+%if ! 0%{?_with_system_libc_client}
+Requires: %{imap_libs}%{?_isa} = %{version}-%{release}
+%endif
 # imap -> uw-imap rename
 Obsoletes: imap-utils < 1:%{version}
 %description utils
@@ -154,6 +162,10 @@ install -p -m644 %{SOURCE22} imap.pam
 %endif
 %endif
 
+%if 0%{?_with_system_libc_client}
+%patch11 -p1 -b .system_c_client
+%endif
+
 
 %build
 
@@ -172,16 +184,23 @@ export EXTRACFLAGS="$EXTRACFLAGS -fno-strict-aliasing"
 export EXTRACFLAGS="$EXTRACFLAGS -Wno-pointer-sign"
 %endif
 
-echo "y" | \
+echo -e "y\ny" | \
 make %{?_smp_mflags} lnp \
+IP=6 \
 EXTRACFLAGS="$EXTRACFLAGS" \
 EXTRALDFLAGS="$EXTRALDFLAGS" \
 EXTRAAUTHENTICATORS=gss \
-SPECIALS="GSSDIR=${GSSDIR} LOCKPGM=%{_sbindir}/mlock SSLCERTS=%{sslcerts} SSLDIR=%{_datadir}/ssl SSLINCLUDE=%{_includedir}/openssl SSLLIB=%{_libdir}" \
+SPECIALS="GSSDIR=${GSSDIR} LOCKPGM=%{_sbindir}/mlock SSLCERTS=%{ssldir}/certs SSLDIR=%{ssldir} SSLINCLUDE=%{_includedir}/openssl SSLKEYS=%{ssldir}/private SSLLIB=%{_libdir}" \
 SSLTYPE=unix \
+%if 0%{?_with_system_libc_client}
+CCLIENTLIB=%{_libdir}/%{shlibname} \
+%else
 CCLIENTLIB=$(pwd)/c-client/%{shlibname} \
+%endif
 SHLIBBASE=%{soname} \
-SHLIBNAME=%{shlibname}
+SHLIBNAME=%{shlibname} \
+%if 0%{?_with_system_libc_client}
+%endif
 # Blank line
 
 
@@ -190,12 +209,18 @@ rm -rf $RPM_BUILD_ROOT
 
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/
 
+%if ! 0%{?_with_system_libc_client}
 %if 0%{?_with_static:1}
 install -p -m644 ./c-client/c-client.a $RPM_BUILD_ROOT%{_libdir}/
 ln -s c-client.a $RPM_BUILD_ROOT%{_libdir}/libc-client.a
 %endif
 
 install -p -m755 ./c-client/%{shlibname} $RPM_BUILD_ROOT%{_libdir}/
+
+# %%ghost'd c-client.cf
+touch c-client.cf
+install -p -m644 -D c-client.cf $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
+%endif
 
 %if 0%{?_with_devel:1}
 ln -s %{shlibname} $RPM_BUILD_ROOT%{_libdir}/lib%{soname}.so
@@ -229,18 +254,15 @@ install -p -m644 -D %{SOURCE33} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop2
 install -p -m644 -D %{SOURCE34} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/ipop3
 install -p -m644 -D %{SOURCE35} $RPM_BUILD_ROOT%{_sysconfdir}/xinetd.d/pop3s
 
-## %ghost'd items 
-# *.pem files
-mkdir -p $RPM_BUILD_ROOT%{sslcerts}/
-touch $RPM_BUILD_ROOT%{sslcerts}/{imapd,ipop3d}.pem
-# c-client.cf
-touch $RPM_BUILD_ROOT%{_sysconfdir}/c-client.cf
+# %ghost'd *.pem files
+mkdir -p $RPM_BUILD_ROOT%{ssldir}/certs
+touch $RPM_BUILD_ROOT%{ssldir}/certs/{imapd,ipop3d}.pem
 
 
 # FIXME, do on first launch (or not at all?), not here -- Rex
 %post
 {
-cd %{sslcerts} &> /dev/null || :
+cd %{ssldir}/certs &> /dev/null || :
 for CERT in imapd.pem ipop3d.pem ;do
    if [ ! -e $CERT ];then
       if [ -e stunnel.pem ];then
@@ -285,8 +307,8 @@ rm -rf $RPM_BUILD_ROOT
 # do this in a %trigger or something not here... -- Rex
 %config(noreplace) %{_sysconfdir}/xinetd.d/imaps
 %config(noreplace) %{_sysconfdir}/xinetd.d/pop3s
-%attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{sslcerts}/imapd.pem
-%attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{sslcerts}/ipop3d.pem
+%attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{ssldir}/certs/imapd.pem
+%attr(0600,root,root) %ghost %config(missingok,noreplace) %verify(not md5 size mtime) %{ssldir}/certs/ipop3d.pem
 %{_mandir}/man8/*
 %{_sbindir}/ipop2d
 %{_sbindir}/ipop3d
@@ -298,12 +320,14 @@ rm -rf $RPM_BUILD_ROOT
 %attr(2755, root, mail) %{_sbindir}/mlock
 %{_mandir}/man1/*
 
+%if ! 0%{?_with_system_libc_client}
 %files -n %{imap_libs} 
 %defattr(-,root,root)
 %doc LICENSE.txt NOTICE SUPPORT 
 %doc docs/RELNOTES docs/*.txt
 %ghost %config(missingok,noreplace) %{_sysconfdir}/c-client.cf
 %{_libdir}/lib%{soname}.so.*
+%endif
 
 %if 0%{?_with_devel:1}
 %files devel
@@ -321,6 +345,18 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jun 13 2011 Rex Dieter <rdieter@fedoraproject.org> 2007e-13
+- _with_system_libc_client option (el6+) 
+- tight deps via %%?_isa
+- drop extraneous Requires(post,postun): xinetd
+
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2007e-12
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Tue Apr 27 2010 Rex Dieter <rdieter@fedoraproject.org> - 2007e-11
+- SSL connection through IPv6 fails (#485860)
+- fix SSLDIR, set SSLKEYS
+
 * Wed Sep 16 2009 Tomas Mraz <tmraz@redhat.com> - 2007e-10
 - use password-auth common PAM configuration instead of system-auth
   where available
@@ -498,7 +534,7 @@ rm -rf $RPM_BUILD_ROOT
 * Mon Aug 15 2005 Rex Dieter <rexdieter[AT]users.sf.net> 2004e-1
 - imap-2004e
 - rename: imap -> uw-imap (yay, we get to drop the Epoch)
-- sslcerts=%{_sysconfdir}/pki/tls/certs if exists, else /usr/share/ssl/certs
+- sslcerts=%%{_sysconfdir}/pki/tls/certs if exists, else /usr/share/ssl/certs
 
 * Fri Apr 29 2005 Rex Dieter <rexdieter[AT]users.sf.net> 1:2004d-1
 - 2004d
