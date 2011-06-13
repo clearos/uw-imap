@@ -72,7 +72,10 @@ BuildRequires: pam-devel
 Requires: xinetd
 Requires(post): openssl
 
-%if ! 0%{?_with_system_libc_client}
+%if 0%{?_with_system_libc_client}
+BuildRequires: libc-client-devel = %{version}
+Requires: %{imap_libs}%{?_isa} = %{version}
+%else
 Requires: %{imap_libs}%{?_isa} = %{version}-%{release}
 %endif
 
