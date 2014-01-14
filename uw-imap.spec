@@ -1,7 +1,7 @@
 
 # Fedora review: http://bugzilla.redhat.com/166008
 
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} == 7
 %define _with_devel 1
 # ship static lib, matches default upstream config
 # as convenience to users, since our hacked shlib can potentially break 
@@ -9,14 +9,14 @@
 %define _with_static 1
 %endif
 
-%if 0%{?rhel} > 5
+%if 0%{?rhel} == 6
 %define _with_system_libc_client 1
 %endif
 
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007f
-Release: 4%{?dist}
+Release: 4%{?dist}.1
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -348,6 +348,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jan 14 2014 Remi Collet <remi@fedoraproject.org> - 2007f-4.1
+- EPEL-7 build (RHEL-7 don't have libc-client)
+
 * Fri Feb 15 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2007f-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
