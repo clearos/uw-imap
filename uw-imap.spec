@@ -16,7 +16,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007f
-Release: 5%{?dist}
+Release: 6%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -64,6 +64,7 @@ Patch5: imap-2007e-overflow.patch
 Patch9: imap-2007e-shared.patch
 Patch10: imap-2007e-authmd5.patch
 Patch11: imap-2007e-system_c_client.patch
+Patch12: imap-2007f-format-security.patch
 
 BuildRequires: krb5-devel
 BuildRequires: openssl-devel
@@ -168,6 +169,8 @@ install -p -m644 %{SOURCE22} imap.pam
 %if 0%{?_with_system_libc_client}
 %patch11 -p1 -b .system_c_client
 %endif
+
+%patch12 -p1 -b .fmt-sec
 
 
 %build
@@ -348,6 +351,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr 14 2014 Jaromir Capik <jcapik@redhat.com> - 2007f-6
+- Fixing format-security flaws (#1037374)
+
 * Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2007f-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
