@@ -16,7 +16,7 @@
 Summary: UW Server daemons for IMAP and POP network mail protocols
 Name:	 uw-imap 
 Version: 2007f
-Release: 7%{?dist}
+Release: 8%{?dist}
 
 # See LICENSE.txt, http://www.apache.org/licenses/LICENSE-2.0
 License: ASL 2.0 
@@ -265,6 +265,10 @@ mkdir -p $RPM_BUILD_ROOT%{ssldir}/certs
 touch $RPM_BUILD_ROOT%{ssldir}/certs/{imapd,ipop3d}.pem
 
 
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+
 # FIXME, do on first launch (or not at all?), not here -- Rex
 %post
 {
@@ -292,15 +296,6 @@ done
 %postun
 /sbin/service xinetd reload > /dev/null 2>&1 || :
 
-%post -n %{imap_libs} -p /sbin/ldconfig
-
-%postun -n %{imap_libs} -p /sbin/ldconfig
-
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %files
 %defattr(-,root,root,-)
 %doc docs/SSLBUILD
@@ -327,6 +322,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/*
 
 %if ! 0%{?_with_system_libc_client}
+%post -n %{imap_libs} -p /sbin/ldconfig
+%postun -n %{imap_libs} -p /sbin/ldconfig
+
 %files -n %{imap_libs} 
 %defattr(-,root,root)
 %doc LICENSE.txt NOTICE SUPPORT 
@@ -351,6 +349,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jul 21 2014 Rex Dieter <rdieter@fedoraproject.org> 2007f-8
+- move scriptlets near corresponding %%files
+
 * Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2007f-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
