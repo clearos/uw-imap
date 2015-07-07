@@ -1,1 +1,4 @@
 /imap-2007f.tar.gz
+/Makefile
+*.src.rpm
+*.tar.gz
