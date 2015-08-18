@@ -2,9 +2,6 @@
 
 Forked version of uw-imap with ClearOS changes applied
 
-## Update usage
-  Add __#kojibuild__ to commit message to automatically build
-
 * git clone git+ssh://git@github.com/clearos/uw-imap.git
 * cd uw-imap
 * git checkout epel7
